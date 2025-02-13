@@ -33,7 +33,7 @@ from pytorch_lightning.callbacks import TQDMProgressBar
 
 import predimgbmanalysis.utils as utils
 from predimgbmanalysis.models import models_dict
-from predimgbmanalysis.get_toydata import load_data_fn, fetch_dataloader, dataset_dict
+from predimgbmanalysis.get_toydata import load_data_fn, dataset_dict
 from sklearn.model_selection import KFold
 
 logger = logging.getLogger(__name__)

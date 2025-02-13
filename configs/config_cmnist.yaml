@@ -30,11 +30,10 @@ pl_params:
       - 0.3081  
     prog_feature: "b_col"
     pred_feature: "b_digitcircle"
-    save_num_data_dir: null
     img_size: 28
     #pad_transform: 2
     #pad_data: [[0,0],[2,2],[2,2]]
-    root: "${env:DATASET_LOCATION}/mnist"
+    root: "${oc.env:DATASET_LOCATION}/mnist"
     save_num_data_dir: null
 
   use_cuda: True
@@ -54,7 +53,7 @@ trainer_params:
 log_saliency_every_n_batch: null
 save_num_data: true
 
-experiment_location: "${env:EXPERIMENT_LOCATION}"
+experiment_location: "${oc.env:EXPERIMENT_LOCATION}"
 
 
 hydra:
