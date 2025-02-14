@@ -93,10 +93,11 @@ class GetSaliencyCallback(pl.Callback):
                     )
                     saliency_map_env /= max(value_range[1], 1e-12)
                     # if x_e is a 3d image then only take one slice of the image
+                    input_img = batch[env_key][0][:2]
                     if len(x_e.shape) == 5:
                         slice = x_e.shape[-1] // 2
                         saliency_map_env = saliency_map_env[:, :, :, :, slice]
-                        input_img = batch[env_key][0][:2][:, :, :, :, slice]
+                        input_img = input_img[:, :, :, :, slice]
 
                     pl_module.logger.experiment.add_image(
                         f"Saliency_map_env_{env_idx}",

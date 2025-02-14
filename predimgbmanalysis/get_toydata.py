@@ -225,6 +225,7 @@ def load_img_data_cmnist(
     env_treatidx_mapping={"CG": 0, "EG": 1},
     **data_kwargs,
 ):
+    # 特征类型列表
     feature_type_list = [
         "b_col",
         "b_bgcol",
@@ -242,7 +243,7 @@ def load_img_data_cmnist(
                 and predictive feature {pred_feature}, train/val split={1-val_split_size}/{val_split_size}."
     )
 
-    # assert env in ["CG", "EG", "train", "CGval", "EGval", "val", "test"]
+    # 断言特征类型
     assert pred_feature in feature_type_list
     assert prog_feature in feature_type_list
     assert pred_feature != prog_feature
@@ -262,6 +263,7 @@ def load_img_data_cmnist(
             "uniform" in data_kwargs.get("input_type")
         ), f"Continuous data must be sampled from continuous distribution, instead sampled from {data_kwargs.get('input_type')}"
 
+    # 加载MNIST数据集
     mnist = datasets.mnist.MNIST(root, train=train, download=False)
     mnist_array = mnist.data.numpy()
     mnist_targets_array = mnist.targets.numpy()
@@ -284,7 +286,7 @@ def load_img_data_cmnist(
                 mnist_array = X_val
                 mnist_targets_array = y_val
 
-        # environment (=treatment group) split: split dataset into two even sized parts
+        # 环境（=处理组）拆分：将数据集拆分为两个大小相等的部分
         n_split = int(len(mnist_targets_array) / 2)
         if env.startswith("CG"):
             mnist_array = mnist_array[:n_split]
@@ -302,7 +304,7 @@ def load_img_data_cmnist(
     if pred_feature.startswith("b_digit") or prog_feature.startswith("b_digit"):
         idx = 0 if pred_feature.startswith("b_digit") else 1
         feature = pred_feature if pred_feature.startswith("b_digit") else prog_feature
-        if feature == "b_digit":  # only get digits 0 and 1
+        if feature == "b_digit":  # 仅获取数字0和1
             if n_batch is not None:
                 assert (
                     len(mnist_targets_array[mnist_targets_array < 2]) >= n_batch
@@ -310,12 +312,12 @@ def load_img_data_cmnist(
             x = mnist_targets_array[mnist_targets_array < 2]
             mnist_array = mnist_array[mnist_targets_array < 2]
             mnist_targets_array = x
-        if feature == "b_digitcircle":  # "has no circle"
+        if feature == "b_digitcircle":  # "没有圆圈"
             circledigits = [0, 6, 8, 9]
             x = mnist_targets_array
             x[np.isin(mnist_targets_array, circledigits)] = 0
             x[~np.isin(mnist_targets_array, circledigits)] = 1
-        if feature == "b_digitvline":  # "has vertical line"
+        if feature == "b_digitvline":  # "有垂直线"
             vlinedigits = [1, 4, 5, 7, 9]
             x = mnist_targets_array
             x[~np.isin(mnist_targets_array, vlinedigits)] = 0
@@ -356,7 +358,7 @@ def load_img_data_cmnist(
     elif len(data) == 4:
         x, y, treat, y_counterf = data
 
-    if save_num_data_dir is not None:  # saving numerical/tabular data only
+    if save_num_data_dir is not None:  # 仅保存数值/表格数据
         torch.save(data, os.path.join(save_num_data_dir, "numdata_train.pt"))
     mnist_array = np.repeat(mnist_array[:, np.newaxis], 3, axis=1)
 
@@ -376,7 +378,7 @@ def load_img_data_cmnist(
             (img_copy.sum(1) > 0).unsqueeze(1).expand(-1, 3, -1, -1)
         ]
 
-    # Normalise image to range [0,1] before introducing continuous features
+    # 在引入连续特征之前将图像归一化到范围[0,1]
     img = img.float()
     img = (img - img.min()) / (img.max() - img.min())
 
@@ -404,12 +406,12 @@ def load_img_data_cmnist(
     if sum(active_channels) > 0:
         img = (
             img * torch.tensor(active_channels)[None, :, None, None]
-        )  # set overall non-active channels to 0
+        )  # 将整体非活动通道设置为0
 
     if normalise_range:
         if bg_value is None:
             bg_value = (img.max() - img.min()) / 2
-        img = 2 * (img - bg_value)  # [0,1] to [-1,1]
+        img = 2 * (img - bg_value)  # [0,1]到[-1,1]
 
     if normalise_value is not None:
         assert (
