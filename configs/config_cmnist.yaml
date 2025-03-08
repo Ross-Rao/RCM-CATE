@@ -32,7 +32,7 @@ pl_params:
     pred_feature: "b_digitcircle"
     img_size: 28
     #pad_transform: 2
-    #pad_data: [[0,0],[2,2],[2,2]]
+    pad_data: [[0,0],[2,2],[2,2]]
     root: "${oc.env:DATASET_LOCATION}/mnist"
     save_num_data_dir: null
 

@@ -31,7 +31,7 @@ pl_params:
     preload_imgs: true
     pred_feature: "b_globules"
     prog_feature: "b_pignet"
-    root: "${env:DATASET_LOCATION}/ISIC2018"
+    root: "${oc.env:DATASET_LOCATION}/ISIC2018"
     save_num_data_dir: null
 
   use_cuda: True
@@ -51,7 +51,7 @@ trainer_params:
 log_saliency_every_n_batch: null
 save_num_data: true
 
-experiment_location: "${env:EXPERIMENT_LOCATION}"
+experiment_location: "${oc.env:EXPERIMENT_LOCATION}"
 
 hydra:
   job:

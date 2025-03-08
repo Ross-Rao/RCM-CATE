@@ -15,7 +15,7 @@ from skimage import io, transform
 import cv2
 
 from tqdm import tqdm
-import tqdm.notebook as tq
+import tqdm as tq
 
 import pydicom
 import pydicom_seg
@@ -720,9 +720,14 @@ def preprocess_img_data_isic2018(
                     print(f"preprocessing {suffix} imgs")
                     imgs = []
                     for i in tqdm(range(len(data))):
-                        path = os.path.join(
-                            root, "images", f"ISIC_{data.iloc[i]['img_id']}.jpg"
-                        )
+                        if suffix == "test":
+                            path = os.path.join(
+                                root, "ISIC2018_Task1-2_Validation_Input", f"ISIC_{data.iloc[i]['img_id']}.jpg"
+                            )
+                        else:
+                            path = os.path.join(
+                                root, "ISIC2018_Task1-2_Training_Input", f"ISIC_{data.iloc[i]['img_id']}.jpg"
+                            )
                         imgs.append(transform(default_loader(path)))
 
                     torch.save(imgs, save_path)
@@ -1537,9 +1542,8 @@ if __name__ == "__main__":
 
     # ISIC 2018
     root_path = os.path.join(
-        os.getenv("DATASET_LOCATION", "/absolute/path/to/datasets"), "ISIC2018"
+        os.getenv("DATASET_LOCATION", "/home/user2/data"), "ISIC2018"
     )
-    preprocess_img_data_cub2011(root=root_path, class_ids=None)
     attributes_to_df_isic2018(
         "ISIC2018_Task2_Training_GroundTruth_v3",
         root=root_path,
@@ -1595,60 +1599,60 @@ if __name__ == "__main__":
             output_file="imgs_traincv",
         )
 
-    # NSCLC-Radiomics
-    root_path = os.path.join(
-        os.getenv("DATASET_LOCATION", "/absolute/path/to/datasets"), "NSCLC_Radiomics"
-    )
-
-    # alternative to preprocessing based on nnunet
-    preprocess_nsclc_radiomics(
-        root=root_path,
-        resize=False,
-        get_tumour_bbox_patches=True,
-        get_largest_tumour_component_only=True,
-    )
-    split_nsclc_radiomics(
-        root=root_path,
-        get_classification_labels=True,
-        preprocessed_folder_name="preprocessed_tumourbbox_patches",
-    )
-    get_metadata_and_normalize_radiomics_features(
-        root=root_path,
-        preprocessed_folder_name="preprocessed_tumourbbox_patches",
-        metadata_filename=None,
-    )
-
-    preprocess_nsclc_radiomics(
-        root=root_path,
-        resize=False,
-        get_tumour_bbox_patches=True,
-        get_largest_tumour_component_only=True,
-        preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
-        resampling_mode="nnunet",
-    )
-    split_nsclc_radiomics(
-        root=root_path,
-        get_classification_labels=True,
-        preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
-    )
-    get_metadata_and_normalize_radiomics_features(
-        root=root_path,
-        preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
-        normalization_method="zscore",
-        metadata_filename=None,
-    )
-
-    # NSCLC-Radiomics: Combine CG and CGval files into one for 5-fold CV
-    combine_trainval_metadata(
-        root=root_path,
-        preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
-    )
-
-    # Get preprocessed NSCLC-Radiomics Segmentations
-    preprocess_nsclc_radiomics_segmentations_only(
-        resize=False,
-        get_tumour_bbox_patches=True,
-        get_largest_tumour_component_only=True,
-        preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample_seg",
-        resampling_mode="nnunet",
-    )
+    # # NSCLC-Radiomics
+    # root_path = os.path.join(
+    #     os.getenv("DATASET_LOCATION", "/absolute/path/to/datasets"), "NSCLC_Radiomics"
+    # )
+    #
+    # # alternative to preprocessing based on nnunet
+    # preprocess_nsclc_radiomics(
+    #     root=root_path,
+    #     resize=False,
+    #     get_tumour_bbox_patches=True,
+    #     get_largest_tumour_component_only=True,
+    # )
+    # split_nsclc_radiomics(
+    #     root=root_path,
+    #     get_classification_labels=True,
+    #     preprocessed_folder_name="preprocessed_tumourbbox_patches",
+    # )
+    # get_metadata_and_normalize_radiomics_features(
+    #     root=root_path,
+    #     preprocessed_folder_name="preprocessed_tumourbbox_patches",
+    #     metadata_filename=None,
+    # )
+    #
+    # preprocess_nsclc_radiomics(
+    #     root=root_path,
+    #     resize=False,
+    #     get_tumour_bbox_patches=True,
+    #     get_largest_tumour_component_only=True,
+    #     preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
+    #     resampling_mode="nnunet",
+    # )
+    # split_nsclc_radiomics(
+    #     root=root_path,
+    #     get_classification_labels=True,
+    #     preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
+    # )
+    # get_metadata_and_normalize_radiomics_features(
+    #     root=root_path,
+    #     preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
+    #     normalization_method="zscore",
+    #     metadata_filename=None,
+    # )
+    #
+    # # NSCLC-Radiomics: Combine CG and CGval files into one for 5-fold CV
+    # combine_trainval_metadata(
+    #     root=root_path,
+    #     preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample",
+    # )
+    #
+    # # Get preprocessed NSCLC-Radiomics Segmentations
+    # preprocess_nsclc_radiomics_segmentations_only(
+    #     resize=False,
+    #     get_tumour_bbox_patches=True,
+    #     get_largest_tumour_component_only=True,
+    #     preprocessed_folder_name="preprocessed_tumourbbox_patches_nnunetresample_seg",
+    #     resampling_mode="nnunet",
+    # )
